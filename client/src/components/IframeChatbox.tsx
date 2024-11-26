@@ -15,6 +15,9 @@ interface Agent {
 interface IframeChatboxProps {
   currentAgent?: Agent | null;
   onClose?: () => void;
+  position?: number;
+  isIframe?: boolean;
+  iframeUrl?: string;
 }
 
 interface Message {
@@ -23,7 +26,13 @@ interface Message {
   timestamp: Date;
 }
 
-export default function IframeChatbox({ currentAgent, onClose }: IframeChatboxProps) {
+export default function IframeChatbox({ 
+  currentAgent, 
+  onClose, 
+  position = 0,
+  isIframe = false,
+  iframeUrl
+}: IframeChatboxProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -91,6 +100,8 @@ export default function IframeChatbox({ currentAgent, onClose }: IframeChatboxPr
     }
   };
 
+  const chatPosition = position * 420; // 400px height + 20px gap
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -98,12 +109,13 @@ export default function IframeChatbox({ currentAgent, onClose }: IframeChatboxPr
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="fixed bottom-4 right-4 z-50"
+          style={{ bottom: `${chatPosition + 16}px` }}
+          className="fixed right-4 z-50"
         >
           <div className="glassmorphism overflow-hidden">
             <div className="flex items-center justify-between p-2 border-b border-purple-500/20">
               <div className="flex items-center gap-2">
-                {currentAgent && (
+                {currentAgent && !isIframe && (
                   <img 
                     src={currentAgent.avatar}
                     alt={currentAgent.name}
@@ -111,7 +123,7 @@ export default function IframeChatbox({ currentAgent, onClose }: IframeChatboxPr
                   />
                 )}
                 <h3 className="text-sm font-medium gradient-text">
-                  {currentAgent ? `Chat with ${currentAgent.name}` : 'IAMAI Chat'}
+                  {isIframe ? 'IAMAI Chat' : currentAgent ? `Chat with ${currentAgent.name}` : 'Chat'}
                 </h3>
               </div>
               <div className="flex gap-2">
@@ -141,69 +153,68 @@ export default function IframeChatbox({ currentAgent, onClose }: IframeChatboxPr
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="flex flex-col"
             >
-              <ScrollArea className="flex-1 p-4">
-                <div className="space-y-4">
-                  {messages.map((message, index) => (
-                    <div
-                      key={index}
-                      className={`flex ${
-                        message.role === 'user' ? 'justify-end' : 'justify-start'
-                      }`}
-                    >
-                      <div
-                        className={`max-w-[80%] p-3 rounded-lg ${
-                          message.role === 'user'
-                            ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500'
-                            : 'bg-gray-800'
-                        }`}
-                      >
-                        <p className="text-sm">{message.content}</p>
-                        <span className="text-xs text-gray-300 mt-1">
-                          {message.timestamp.toLocaleTimeString()}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                  <div ref={messagesEndRef} />
-                </div>
-              </ScrollArea>
-              <form
-                onSubmit={handleSendMessage}
-                className="border-t border-purple-500/20 p-2 flex gap-2"
-              >
-                <Input
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  disabled={!currentAgent || isLoading}
-                  className="bg-black/50 border-purple-500/30 focus:border-purple-500"
+              {isIframe ? (
+                <iframe
+                  src={iframeUrl}
+                  className="w-full h-full border-none"
+                  title="IAMAI Chat"
                 />
-                <Button
-                  type="submit"
-                  disabled={!currentAgent || isLoading}
-                  className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </form>
+              ) : (
+                <>
+                  <ScrollArea className="flex-1 p-4">
+                    <div className="space-y-4">
+                      {messages.map((message, index) => (
+                        <div
+                          key={index}
+                          className={`flex ${
+                            message.role === 'user' ? 'justify-end' : 'justify-start'
+                          }`}
+                        >
+                          <div
+                            className={`max-w-[80%] p-3 rounded-lg ${
+                              message.role === 'user'
+                                ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500'
+                                : 'bg-gray-800'
+                            }`}
+                          >
+                            <p className="text-sm">{message.content}</p>
+                            <span className="text-xs text-gray-300 mt-1">
+                              {message.timestamp.toLocaleTimeString()}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </ScrollArea>
+                  <form
+                    onSubmit={handleSendMessage}
+                    className="border-t border-purple-500/20 p-2 flex gap-2"
+                  >
+                    <Input
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="Type your message..."
+                      disabled={!currentAgent || isLoading}
+                      className="bg-black/50 border-purple-500/30 focus:border-purple-500"
+                    />
+                    <Button
+                      type="submit"
+                      disabled={!currentAgent || isLoading}
+                      className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </form>
+                </>
+              )}
             </motion.div>
           </div>
         </motion.div>
-      )}
-      {!isOpen && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500"
-          onClick={() => setIsOpen(true)}
-        >
-          <span className="sr-only">Open Chat</span>
-          <MessageSquare className="w-6 h-6" />
-        </motion.button>
       )}
     </AnimatePresence>
   );

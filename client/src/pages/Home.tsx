@@ -16,14 +16,21 @@ interface Agent {
 }
 
 export default function Home() {
-  const [currentAgent, setCurrentAgent] = useState<Agent | null>(null);
+  const [activeChats, setActiveChats] = useState<Agent[]>([]);
+  const [showIAMAIChat, setShowIAMAIChat] = useState(false);
 
   const handleChatWithAgent = (agent: Agent) => {
-    setCurrentAgent(agent);
+    if (!activeChats.find(chat => chat.id === agent.id)) {
+      setActiveChats(prev => [...prev, agent]);
+    }
   };
 
-  const handleCloseChat = () => {
-    setCurrentAgent(null);
+  const handleCloseChat = (agentId: number) => {
+    setActiveChats(prev => prev.filter(agent => agent.id !== agentId));
+  };
+
+  const handleToggleIAMAIChat = () => {
+    setShowIAMAIChat(prev => !prev);
   };
 
   return (
@@ -37,10 +44,31 @@ export default function Home() {
         <Newsletter />
       </main>
       <Footer />
-      <IframeChatbox 
-        currentAgent={currentAgent}
-        onClose={handleCloseChat}
-      />
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col-reverse items-end space-y-reverse space-y-4">
+        {showIAMAIChat && (
+          <IframeChatbox
+            key="iamai"
+            isIframe={true}
+            iframeUrl="https://iamai.wtf"
+            onClose={() => setShowIAMAIChat(false)}
+          />
+        )}
+        {activeChats.map((agent, index) => (
+          <IframeChatbox
+            key={agent.id}
+            currentAgent={agent}
+            onClose={() => handleCloseChat(agent.id)}
+            position={index}
+          />
+        ))}
+      </div>
+      <Button
+        onClick={handleToggleIAMAIChat}
+        className="fixed bottom-4 left-4 z-50 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500"
+      >
+        <MessageSquare className="w-4 h-4 mr-2" />
+        IAMAI Chat
+      </Button>
     </div>
   );
 }
