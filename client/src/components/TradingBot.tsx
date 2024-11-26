@@ -20,6 +20,8 @@ const features = [
   }
 ];
 
+import TradingStats from './TradingStats';
+
 export default function TradingBot() {
   return (
     <section className="py-16 relative">
@@ -38,7 +40,9 @@ export default function TradingBot() {
           Trading Bot
         </h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <TradingStats />
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
           {features.map((feature, index) => (
             <motion.div
               key={index}
