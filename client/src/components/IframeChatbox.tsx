@@ -1,11 +1,28 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { X, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Maximize2, Minimize2, MessageSquare } from 'lucide-react';
 
-export default function IframeChatbox() {
+interface Agent {
+  id: number;
+  name: string;
+  chatUrl: string;
+  avatar: string;
+}
+
+interface IframeChatboxProps {
+  currentAgent?: Agent | null;
+  onClose?: () => void;
+}
+
+export default function IframeChatbox({ currentAgent, onClose }: IframeChatboxProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    onClose?.();
+  };
 
   return (
     <AnimatePresence>
@@ -18,7 +35,18 @@ export default function IframeChatbox() {
         >
           <div className="glassmorphism overflow-hidden">
             <div className="flex items-center justify-between p-2 border-b border-purple-500/20">
-              <h3 className="text-sm font-medium gradient-text">IAMAI Chat</h3>
+              <div className="flex items-center gap-2">
+                {currentAgent && (
+                  <img 
+                    src={currentAgent.avatar}
+                    alt={currentAgent.name}
+                    className="w-6 h-6 rounded-full border border-purple-500"
+                  />
+                )}
+                <h3 className="text-sm font-medium gradient-text">
+                  {currentAgent ? `Chat with ${currentAgent.name}` : 'IAMAI Chat'}
+                </h3>
+              </div>
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
@@ -32,7 +60,7 @@ export default function IframeChatbox() {
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleClose}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -46,9 +74,9 @@ export default function IframeChatbox() {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
               <iframe
-                src="https://iamai.wtf"
+                src={currentAgent?.chatUrl || "https://iamai.wtf"}
                 className="w-full h-full border-none"
-                title="IAMAI Chat"
+                title={`Chat with ${currentAgent?.name || 'IAMAI'}`}
               />
             </motion.div>
           </div>
@@ -62,7 +90,7 @@ export default function IframeChatbox() {
           onClick={() => setIsOpen(true)}
         >
           <span className="sr-only">Open Chat</span>
-          <img src="/iamai-logo.svg" alt="IAMAI" className="w-6 h-6" />
+          <MessageSquare className="w-6 h-6" />
         </motion.button>
       )}
     </AnimatePresence>
