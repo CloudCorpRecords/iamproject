@@ -56,6 +56,36 @@ We welcome contributions! Here's how you can help:
 - Write meaningful comments
 - Include unit tests for new features
 
+## Project Structure Guide
+
+Our codebase is organized as follows:
+
+#### Frontend Components (client/src/components/)
+- Hero.tsx - Landing page hero section
+- Agents.tsx - AI agent profiles and chat integration
+- TradingBot.tsx - Cryptocurrency price tracking interface
+- TradingStats.tsx - Real-time crypto market statistics
+- TokenUtility.tsx - Token staking preview interface
+- MatrixRain.tsx - Cyberpunk matrix animation effect
+- IframeChatbox.tsx - Expandable chat window component
+- Newsletter.tsx - Email subscription component
+
+#### Core Features
+- OpenAI Chat Integration: server/routes/chat.ts
+- Real-time Crypto Data: client/src/components/TradingStats.tsx
+- Agent Personalities: $IAMAI.txt
+- Animation Effects: client/src/lib/animations.ts
+
+#### Development
+This project is currently hosted on Replit, which provides an integrated development environment and hosting solution. However, we welcome contributions through GitHub:
+
+1. Fork the repository
+2. Make your changes locally
+3. Test on your own Replit instance
+4. Submit a pull request to our GitHub repository
+
+The changes will be reviewed and, if approved, deployed to our main Replit instance.
+
 ## License
 MIT License
 
