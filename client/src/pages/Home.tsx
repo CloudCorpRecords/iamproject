@@ -7,6 +7,8 @@ import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
 import MatrixRain from "@/components/MatrixRain";
 import IframeChatbox from "@/components/IframeChatbox";
+import { Button } from "@/components/ui/button";
+import { MessageSquare } from "lucide-react";
 
 interface Agent {
   id: number;
