@@ -7,6 +7,7 @@
     --neon-pink: #ff00ff;
     --neon-blue: #00ffff;
     --neon-purple: #b000ff;
+    --neon-green: #00ff00;
   }
 
   * {
@@ -20,17 +21,50 @@
 
   .glassmorphism {
     @apply bg-black/30 backdrop-blur-lg border border-white/10 rounded-lg;
+    box-shadow: 0 0 20px rgba(176, 0, 255, 0.1);
+    animation: borderGlow 4s infinite alternate;
   }
 
   .neon-text {
     text-shadow: 0 0 10px var(--neon-purple),
                  0 0 20px var(--neon-pink),
-                 0 0 30px var(--neon-blue);
+                 0 0 30px var(--neon-blue),
+                 0 0 40px var(--neon-green);
+    animation: textGlow 2s infinite alternate;
   }
 
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 255, 0.5));
   }
+
+  .cyber-border {
+    position: relative;
+    border: 1px solid rgba(255, 0, 255, 0.2);
+  }
+
+  .cyber-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple), var(--neon-blue));
+    z-index: -1;
+    filter: blur(8px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes borderGlow {
+  0% { box-shadow: 0 0 20px rgba(176, 0, 255, 0.1); }
+  100% { box-shadow: 0 0 30px rgba(255, 0, 255, 0.3); }
+}
+
+@keyframes textGlow {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.5); }
 }
 
 .parallax {
